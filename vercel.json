@@ -1,5 +1,3 @@
-// vecel config 
-
 {
     "version": "2",
     "builds":[
