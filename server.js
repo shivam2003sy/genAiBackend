@@ -6,6 +6,9 @@ const dotenv = require("dotenv").config();
 const cors = require('cors');
 const socketIo = require('socket.io');
 const { addEmailToSocketId } = require("./socket/helper");
+
+
+require('dotenv').config();
 connectDb();
 const app = express();
 const server = http.createServer(app);
@@ -40,17 +43,20 @@ io.on('connection', (socket) => {
   }
   );
 
+  
   // Disconnect event
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
 });
 
+
 app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/posts", require("./routes/postRoutes"));
 app.use("/api/appointments", require("./routes/appointmentRoutes"));
 app.use(errorHandler);
+
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);

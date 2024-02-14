@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Appointment = require("../models/appointmentModel");
-
+const transporter = require('../config/mailConfig').transporter;
+const Mailgen = require('mailgen');
 
 const getAppointments = asyncHandler(async (req, res) => {
     const userEmail = req.query.userEmail; 
@@ -12,25 +13,28 @@ const getAppointments = asyncHandler(async (req, res) => {
     res.status(200).json(appointments);
 });
 
-const addAppointment = asyncHandler(async (req, res) => {
-  const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user ,roomId } = req.body;
-  console.log(req.body);
-  if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId) {
-    res.status(400);
-    throw new Error("All fields are mandatory !");
-  }
-  const appointment = await Appointment.create({
-    title,
-    startDate,
-    endDate,
-    interviewEmail,
-    candidateEmail,
-    interviewInfo,
-    user,
-    roomId
-  });
-  res.status(201).json(appointment);
-});
+
+const getSheduledAppointments = asyncHandler(async (req, res) => {
+    const userEmail = req.query.userEmail; 
+    console.log("User email:", userEmail);
+    const appointments = await Appointment.find({
+        $or :[
+        {interviewEmail: userEmail},
+        {candidateEmail: userEmail}
+        ]
+    }
+    )
+    console.log(appointments);
+    res.status(200).json(appointments);
+}
+);
+
+
+
+
+
+
+
 const getAppointment = asyncHandler(async (req, res) => {
     const appointment = await Appointment.findById(req.params.id);
     if (!appointment) {
@@ -72,7 +76,166 @@ const deleteAppointment = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Appointment removed" });
 });
 
-module.exports = { getAppointments, addAppointment, getAppointment, updateAppointment, deleteAppointment };
+
+
+
+const addAppointment = asyncHandler(async (req, res) => {
+    const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user, roomId } = req.body;
+    console.log(req.body);
+    if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId) {
+      res.status(400);
+      throw new Error("All fields are mandatory !");
+    }
+    const appointment = await Appointment.create({
+      title,
+      startDate,
+      endDate,
+      interviewEmail,
+      candidateEmail,
+      interviewInfo,
+      user,
+      roomId
+    });
+  
+    // Create a Mailgen instance
+    const mailGenerator = new Mailgen({
+      theme: 'default',
+      product: {
+        name: 'InterviewBlitz',
+        link: 'https://localhost:3000/',
+        logo: 'http://localhost:3000/images/logo.svg'
+      }
+    });
+
+    const interviewEmailContent = {
+      body: {
+        name: 'Interviewer',
+        intro: 'You have an interview allocated with the following details :',
+        table: {
+          data: [
+            {
+              key: 'Post',
+              value: title
+            },
+            {
+              key: 'Interviewer Email',
+              value: interviewEmail
+            },
+            {
+              key: 'Candidate Email',
+              value: candidateEmail
+            },
+            {
+              key: 'Date/Time',
+              value: startDate
+            },
+            {
+              key: 'Informaton',
+              value: interviewInfo
+            },
+            {
+                key: 'Join Room',
+                value: `http://localhost:3000/room/${roomId}`
+            }
+          ],
+
+          columns: {
+            
+            customWidth: {
+              key: '20%',
+              value: '80%'
+            }
+          }
+        },
+        outro: 'Thank you for your commitment and participation in  recruitment process through InterviewBlitz.'
+      }
+    };
+    const candidateEmailContent = {
+      body: {
+        name: 'Candidate',
+        intro: 'You have been scheduled for an interview with the following details joining link is provided below 5 minutes before the scheduled time:',
+        table: {
+          data: [
+            {
+              key: 'Post',
+              value: title
+            },
+            {
+
+              key: 'Interviewer Email',
+              value: interviewEmail
+            },
+            {
+              key: 'Date / Time',
+              value: startDate
+            },
+            {
+              key: 'Informaton',
+              value: interviewInfo
+            },
+            {
+                key: 'Join Room',
+                value: `http://localhost:3000/room/${roomId}`
+            }
+          ],
+          columns: {
+            customWidth: {
+              key: '20%',
+              value: '80%'
+            }
+          }
+        },
+        outro: 'We look forward to meeting with you and discussing your qualifications further through InterviewBlitz.'
+      }
+    };
+  
+    // Generate the HTML for interview email
+    const interviewEmailHtml = mailGenerator.generate(interviewEmailContent);
+  
+    // Generate the HTML for candidate email
+    const candidateEmailHtml = mailGenerator.generate(candidateEmailContent);
+  
+    // Generate the plaintext versions of the emails
+    const interviewEmailText = mailGenerator.generatePlaintext(interviewEmailContent);
+    const candidateEmailText = mailGenerator.generatePlaintext(candidateEmailContent);
+    // Send the emails using transporter.sendMail
+
+    const interviewEmailOptions = {
+        from: 'shivam2003sy@gmail.com',
+        to: interviewEmail,
+        subject: 'Interview Scheduled',
+        text: interviewEmailText,
+        html: interviewEmailHtml
+    };
+    const candidateEmailOptions = {
+        from: 'shivam2003sy@gmail.com',
+        to: candidateEmail,
+        subject: 'Interview Scheduled',
+        text: candidateEmailText,
+        html: candidateEmailHtml
+    };
+
+    transporter.sendMail(interviewEmailOptions, (err, info) => {
+        if (err) {
+            console.log(`Error occurred. ${err.message}`);
+            return process.exit(1);
+        }
+        console.log(`Message sent: ${info.messageId}`);
+    }
+    );
+    transporter.sendMail(candidateEmailOptions, (err, info) => {
+        if (err) {
+            console.log(`Error occurred. ${err.message}`);
+            return process.exit(1);
+        }
+        console.log(`Message sent: ${info.messageId}`);
+    }
+    );
+    res.status(201).json(appointment);
+  });
+
+
+module.exports = { getAppointments, addAppointment, getAppointment, updateAppointment, deleteAppointment , getSheduledAppointments };
 
 
 
