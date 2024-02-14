@@ -49,6 +49,7 @@ io.on('connection', (socket) => {
 app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/posts", require("./routes/postRoutes"));
+app.use("/api/appointments", require("./routes/appointmentRoutes"));
 app.use(errorHandler);
 
 server.listen(port, () => {
