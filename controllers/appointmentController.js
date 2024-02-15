@@ -86,8 +86,8 @@ const addAppointment = asyncHandler(async (req, res) => {
       theme: 'default',
       product: {
         name: 'InterviewBlitz',
-        link: 'https://interview-blitz.vercel.app/',
-        logo: 'https://interview-blitz.vercel.app/images/logo.svg'
+        link: 'https://www.interviewblitz.live/',
+        logo: 'https://www.interviewblitz.live/images/logo.svg'
       }
     });
 
@@ -119,7 +119,7 @@ const addAppointment = asyncHandler(async (req, res) => {
             },
             {
                 key: 'Join Room',
-                value: `https://interview-blitz.vercel.app/room/${roomId}`
+                value: `https://www.interviewblitz.live/room/${roomId}`
             }
           ],
 
@@ -159,7 +159,7 @@ const addAppointment = asyncHandler(async (req, res) => {
             },
             {
                 key: 'Join Room',
-                value: `https://interview-blitz.vercel.app/room/${roomId}`
+                value: `https://www.interviewblitz.live/room/${roomId}`
             }
           ],
           columns: {
