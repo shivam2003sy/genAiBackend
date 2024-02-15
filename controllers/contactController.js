@@ -12,7 +12,6 @@ const getContacts = asyncHandler(async (req, res) => {
 //@route POST /api/contacts
 //@access private
 const createContact = asyncHandler(async (req, res) => {
-  console.log("The request body is :", req.body);
   const { name, email, phone } = req.body;
   if (!name || !email || !phone) {
     res.status(400);

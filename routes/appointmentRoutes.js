@@ -8,7 +8,8 @@ const {
     getAppointment,
     updateAppointment,
     deleteAppointment,
-    getSheduledAppointments 
+    getSheduledAppointments ,
+    getByRoomID
 } = require("../controllers/appointmentController");
 
 const route = express.Router();
@@ -17,10 +18,12 @@ const route = express.Router();
 
 route.get("/", getAppointments);
 route.get("/scheduled", getSheduledAppointments);
+route.get('/roomId', getByRoomID);
 route.post("/", addAppointment);
 route.get("/:id", getAppointment);
 route.put("/:id", updateAppointment);
 route.delete("/:id", deleteAppointment);
+
 
 module.exports = route;
 

@@ -2,21 +2,17 @@ const asyncHandler = require("express-async-handler");
 const Appointment = require("../models/appointmentModel");
 const transporter = require('../config/mailConfig').transporter;
 const Mailgen = require('mailgen');
+const { get } = require("mongoose");
 
 const getAppointments = asyncHandler(async (req, res) => {
     const userEmail = req.query.userEmail; 
-    console.log("User email:", userEmail);
     const appointments = await Appointment.find({
         "user.email": userEmail}
     )
-    console.log(appointments);
     res.status(200).json(appointments);
 });
-
-
 const getSheduledAppointments = asyncHandler(async (req, res) => {
     const userEmail = req.query.userEmail; 
-    console.log("User email:", userEmail);
     const appointments = await Appointment.find({
         $or :[
         {interviewEmail: userEmail},
@@ -24,17 +20,9 @@ const getSheduledAppointments = asyncHandler(async (req, res) => {
         ]
     }
     )
-    console.log(appointments);
     res.status(200).json(appointments);
 }
 );
-
-
-
-
-
-
-
 const getAppointment = asyncHandler(async (req, res) => {
     const appointment = await Appointment.findById(req.params.id);
     if (!appointment) {
@@ -75,13 +63,9 @@ const deleteAppointment = asyncHandler(async (req, res) => {
     await appointment.remove();
     res.status(200).json({ message: "Appointment removed" });
 });
-
-
-
-
 const addAppointment = asyncHandler(async (req, res) => {
     const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user, roomId } = req.body;
-    console.log(req.body);
+   
     if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId) {
       res.status(400);
       throw new Error("All fields are mandatory !");
@@ -102,8 +86,8 @@ const addAppointment = asyncHandler(async (req, res) => {
       theme: 'default',
       product: {
         name: 'InterviewBlitz',
-        link: 'https://localhost:3000/',
-        logo: 'http://localhost:3000/images/logo.svg'
+        link: 'https://interview-blitz.vercel.app/',
+        logo: 'https://interview-blitz.vercel.app/images/logo.svg'
       }
     });
 
@@ -135,7 +119,7 @@ const addAppointment = asyncHandler(async (req, res) => {
             },
             {
                 key: 'Join Room',
-                value: `http://localhost:3000/room/${roomId}`
+                value: `https://interview-blitz.vercel.app/room/${roomId}`
             }
           ],
 
@@ -175,7 +159,7 @@ const addAppointment = asyncHandler(async (req, res) => {
             },
             {
                 key: 'Join Room',
-                value: `http://localhost:3000/room/${roomId}`
+                value: `https://interview-blitz.vercel.app/room/${roomId}`
             }
           ],
           columns: {
@@ -235,7 +219,34 @@ const addAppointment = asyncHandler(async (req, res) => {
   });
 
 
-module.exports = { getAppointments, addAppointment, getAppointment, updateAppointment, deleteAppointment , getSheduledAppointments };
+
+const getByRoomID = asyncHandler(async (req, res) => {
+    const roomID = req.query.roomID;
+    if (!roomID) {
+        res.status(400);
+        throw new Error("Room ID is required");
+    }
+    else {
+        const appointment = await Appointment
+            .findOne({ roomId: roomID });
+    if (!appointment) {
+        res.status(404);
+        throw new Error("Appointment not found");
+    }
+    res.status(200).json(appointment);
+    }
+}
+);
+
+
+
+
+
+
+module.exports = { getAppointments, addAppointment, getAppointment, updateAppointment, deleteAppointment , getSheduledAppointments ,  getByRoomID };
+
+
+
 
 
 
