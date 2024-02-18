@@ -64,9 +64,9 @@ const deleteAppointment = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Appointment removed" });
 });
 const addAppointment = asyncHandler(async (req, res) => {
-    const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user, roomId } = req.body;
+    const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, Role, user, roomId } = req.body;
    
-    if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId) {
+    if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId || !Role) {
       res.status(400);
       throw new Error("All fields are mandatory !");
     }
@@ -77,9 +77,14 @@ const addAppointment = asyncHandler(async (req, res) => {
       interviewEmail,
       candidateEmail,
       interviewInfo,
+      role: {
+        Role,
+        Subroles
+      },
       user,
       roomId
     });
+    console.log(appointment);
   
     // Create a Mailgen instance
     const mailGenerator = new Mailgen({
@@ -117,6 +122,14 @@ const addAppointment = asyncHandler(async (req, res) => {
               key: 'Informaton',
               value: interviewInfo
             },
+            {
+              key: 'Role',
+              value: Role 
+          },
+          {
+              key: 'Subroles',
+              value: Subroles.join(', ') 
+          },
             {
                 key: 'Join Room',
                 value: `https://www.interviewblitz.live/room/${roomId}`
@@ -157,6 +170,14 @@ const addAppointment = asyncHandler(async (req, res) => {
               key: 'Informaton',
               value: interviewInfo
             },
+            {
+              key: 'Role',
+              value: Role 
+          },
+          {
+              key: 'Subroles',
+              value: Subroles.join(', ') 
+          },
             {
                 key: 'Join Room',
                 value: `https://www.interviewblitz.live/room/${roomId}`

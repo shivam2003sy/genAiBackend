@@ -14,8 +14,6 @@ const {
 
 const route = express.Router();
 
-
-
 route.get("/", getAppointments);
 route.get("/scheduled", getSheduledAppointments);
 route.get('/roomId', getByRoomID);

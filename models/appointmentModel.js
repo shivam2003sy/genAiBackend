@@ -7,6 +7,10 @@ const appointmentSchema = new mongoose.Schema({
     interviewEmail: String,
     candidateEmail: String,
     interviewInfo: String,
+    role: {
+      Role: String,
+      Subroles: [String]
+  },
     user  : Object,
     roomId : String,
   });
