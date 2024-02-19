@@ -64,9 +64,9 @@ const deleteAppointment = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Appointment removed" });
 });
 const addAppointment = asyncHandler(async (req, res) => {
-    const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user, roomId } = req.body;
-   
-    if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId) {
+    const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user, roomId ,  Role  ,  TechRole } = req.body;
+   console.log(req.body);
+    if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId ||  !Role ||  !TechRole) {
       res.status(400);
       throw new Error("All fields are mandatory !");
     }
@@ -78,7 +78,9 @@ const addAppointment = asyncHandler(async (req, res) => {
       candidateEmail,
       interviewInfo,
       user,
-      roomId
+      roomId,
+      Role,
+      TechRole
     });
   
     // Create a Mailgen instance
@@ -100,6 +102,14 @@ const addAppointment = asyncHandler(async (req, res) => {
             {
               key: 'Post',
               value: title
+            },
+            {
+              key: 'Role',
+              value: TechRole
+            },
+            {
+              key : 'roles'
+              , value : Role
             },
             {
               key: 'Interviewer Email',
@@ -143,6 +153,10 @@ const addAppointment = asyncHandler(async (req, res) => {
             {
               key: 'Post',
               value: title
+            },
+            {
+              key: 'Role',
+              value: TechRole
             },
             {
 
@@ -198,7 +212,6 @@ const addAppointment = asyncHandler(async (req, res) => {
         text: candidateEmailText,
         html: candidateEmailHtml
     };
-
     transporter.sendMail(interviewEmailOptions, (err, info) => {
         if (err) {
             console.log(`Error occurred. ${err.message}`);
