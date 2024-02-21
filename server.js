@@ -31,14 +31,8 @@ app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/posts", require("./routes/postRoutes"));
 app.use("/api/appointments", require("./routes/appointmentRoutes"));
+app.use("/api/results", require("./routes/resultRoutes"));
 app.use(errorHandler);
-
-
-
-
-
-
-
 
 
 
