@@ -199,14 +199,14 @@ const addAppointment = asyncHandler(async (req, res) => {
     // Send the emails using transporter.sendMail
 
     const interviewEmailOptions = {
-        from: 'shivam2003sy@gmail.com',
+        from: 'interview@interviewBlitz.live',
         to: interviewEmail,
         subject: 'Interview Scheduled',
         text: interviewEmailText,
         html: interviewEmailHtml
     };
     const candidateEmailOptions = {
-        from: 'shivam2003sy@gmail.com',
+        from: 'interview@interviewBlitz.live',
         to: candidateEmail,
         subject: 'Interview Scheduled',
         text: candidateEmailText,

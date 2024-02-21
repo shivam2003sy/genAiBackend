@@ -1,6 +1,8 @@
 // resultController.js
 const Result = require('../models/resultModel');
-
+const {marksCalculator} = require('../utils/marks');
+const transporter = require('../config/mailConfig').transporter;
+const Mailgen = require('mailgen');
 exports.getAllResults = async (req, res) => {
     try {
         const results = await Result.find();
@@ -34,10 +36,72 @@ exports.getResult = async (req, res) => {
 exports.createResult = async (req, res) => {
     try {
         const newResult = await Result.create(req.body);
-        res.status(201).json({
+        
+        const mailGenerator = new Mailgen({
+            theme: 'default',
+            product: {
+              name: 'InterviewBlitz',
+              link: 'https://www.interviewblitz.live/',
+              logo: 'https://www.interviewblitz.live/images/logo.svg'
+            }
+          });
+          const data =  marksCalculator(req.body);
+          console.log("data from function ",data);
+          const candidateEmailContent = {
+            body:{
+                greeting : 'Hello !',
+                intro : `You have scored ${data.percentage}% in the interview. You have scored ${data.obtainedMarks} out of ${data.totalMarks} in the interview.`,
+                table : {
+                    data : [
+                        {
+                            key : 'Need Improvement',
+                            value : JSON.stringify(data.needImprovement)
+                        },
+                        {
+                            key : 'Done Well',
+                            value : JSON.stringify(data.Donewell)
+                        }
+                    ]
+                },
+                outro : 'Thank you for taking the interview.',
+            }
+          }
+
+
+    //     const interviewEmailOptions = {
+    //     from: 'result@InterviewBlitz.live',
+    //     to: newResult.user.email,
+    //     subject: 'Interview Scheduled',
+    //     text: interviewEmailText,
+    //     html: interviewEmailHtml
+    // };
+
+
+    const candidateEmailHtml = mailGenerator.generate(candidateEmailContent);
+    const candidateEmailText = mailGenerator.generatePlaintext(candidateEmailContent);
+
+    const candidateEmailOptions = {
+        from: 'result@InterviewBlitz.live',
+        to: newResult.candidateEmail,
+        subject: 'Result of the interview',
+        text: candidateEmailText,
+        html: candidateEmailHtml
+    };
+
+    transporter.sendMail(candidateEmailOptions, (err, info) => {
+        if (err) {
+            console.log(`Error occurred. ${err.message}`);
+            return process.exit(1);
+        }
+        console.log(`Message sent: ${info.messageId}`);
+    }
+    );
+    res.status(201).json({
         status: 'success',
         result: newResult,
         });
+
+
     } catch (err) {
         res.status(400).json({
         status: 'fail',
@@ -45,7 +109,6 @@ exports.createResult = async (req, res) => {
         });
     }
     }
-
 exports.updateResult = async (req, res) => {
     try {
         const result = await Result.findByIdAndUpdate
