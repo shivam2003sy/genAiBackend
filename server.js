@@ -19,12 +19,12 @@ const io = socketIo(server , {
   }
 });
 
-const corsOptions ={
-  origin: '*', 
-  credentials: true,      
-  optionSuccessStatus: 200
-}
-app.use(cors(corsOptions)); // allowing CORS for all domains
+app.use(cors(
+  {
+    origin: 'http://localhost:3000',
+    credentials: true
+  }
+)); 
 
 app.use(express.json());
 app.use("/api/contacts", require("./routes/contactRoutes"));
