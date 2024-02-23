@@ -8,7 +8,7 @@ const User = require("../models/userModel");
 //@access public
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("User Data: ", req.body);
+
   if (!username || !email || !password) {
     res.status(400);
     throw new Error("All fields are mandatory!");
@@ -21,14 +21,14 @@ const registerUser = asyncHandler(async (req, res) => {
 
   //Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
-  console.log("Hashed Password: ", hashedPassword);
+ 
   const user = await User.create({
     username,
     email,
     password: password,
   });
 
-  console.log(`User created ${user}`);
+  
   if (user) {
     res.status(201).json({ _id: user.id, email: user.email });
   } else {
@@ -42,16 +42,19 @@ const registerUser = asyncHandler(async (req, res) => {
 //@route POST /api/users/login
 //@access public
 const loginUser = asyncHandler(async (req, res) => {
+  
   const { email, password } = req.body;
   if (!email || !password) {
     res.status(400);
     throw new Error("All fields are mandatory!");
   }
   const user = await User.findOne({ email });
+  
   //compare password with hashedpassword
   if (user && await (password === user.password)
     // (await bcrypt.compare(password, user.password))
     ) {
+    
     const accessToken = jwt.sign(
       {
         user: {
@@ -60,9 +63,10 @@ const loginUser = asyncHandler(async (req, res) => {
           id: user.id,
         },
       },
-      process.env.ACCESS_TOKEN_SECERT,
-      { expiresIn: "15m" }
+      process.env.ACCESS_TOKEN_SECERT || "secretofshivam",
+      { expiresIn: "30m" }
     );
+    
     res.status(200).json({ accessToken });
   } else {
     res.status(401);
@@ -92,7 +96,7 @@ const googleLogin = asyncHandler(async (req, res) => {
           id: user.id,
         },
       },
-      process.env.ACCESS_TOKEN_SECERT,
+      process.env.ACCESS_TOKEN_SECERT ||  "secretofshivam" ,
       { expiresIn: "15m" }
     );
     res.status(200).json({ accessToken });
@@ -111,7 +115,7 @@ const googleLogin = asyncHandler(async (req, res) => {
             id: newUser.id,
           },
         },
-        process.env.ACCESS_TOKEN_SECERT,
+        process.env.ACCESS_TOKEN_SECERT || "secretofshivam",
         { expiresIn: "15m" }
       );
       res.status(200).json({ accessToken });

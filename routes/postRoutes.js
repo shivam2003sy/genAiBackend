@@ -20,10 +20,10 @@ router.post(
       // if there are errors
       return res.status(400).json({ errors: errors.array() }); // return errors
     }
-    console.log("req.user.id",req.user.id);
+  
     try {
       const user = await User.findById(req.user.id).select("-password"); 
-    console.log("user",user);
+    
       const newPost = new Post({
         // create new post
         text: req.body.text, // get text from req.body
@@ -47,7 +47,7 @@ router.post(
 // @desc     Get all posts
 // @access   Private
 router.get("/", auth, async (req, res) => {
-    console.log("get all posts");
+    
   // get all posts
   try {
     const posts = await Post.find().sort({ date: -1 }); // get posts from db

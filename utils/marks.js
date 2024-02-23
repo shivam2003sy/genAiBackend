@@ -1,6 +1,6 @@
 exports.marksCalculator = (marksObject) => {
     const marks = marksObject.MarksResult;
-    // console.log(marks);
+   
     let totalMarks = 0;
     let obtainedMarks = 0;
 
@@ -43,10 +43,7 @@ exports.marksCalculator = (marksObject) => {
         }
 
     }
-    // console.log("Main Marks:", mainMarks);
-    // console.log("Main Obtained Marks:", mainObtainedMarks);
-    // console.log("Additional Marks:", additionalMarks);
-    // console.log("Additional Obtained Marks:", additionalObtainedMarks);
+    
     
 
     // calculate the  percentage
@@ -54,12 +51,7 @@ exports.marksCalculator = (marksObject) => {
     obtainedMarks = mainObtainedMarks + additionalObtainedMarks;
     const percentage = (obtainedMarks / totalMarks) * 100;
 
-    // console.log("Total Marks:", totalMarks);
-    // console.log("Obtained Marks:", obtainedMarks);
-    // console.log("Percentage:", percentage);
-    // console.log("Need Improvement:", needImprovement);
-    // console.log("Done Well:", Donewell);
-    // console.log("Exelent:", Exelent);
+   
     return {
         totalMarks,
         obtainedMarks,

@@ -65,7 +65,7 @@ const deleteAppointment = asyncHandler(async (req, res) => {
 });
 const addAppointment = asyncHandler(async (req, res) => {
     const { title, startDate, endDate, interviewEmail, candidateEmail, interviewInfo, user, roomId ,  Role  ,  TechRole } = req.body;
-   console.log(req.body);
+   
     if (!title || !startDate || !endDate || !interviewEmail || !candidateEmail || !interviewInfo || !user || !roomId ||  !Role ||  !TechRole) {
       res.status(400);
       throw new Error("All fields are mandatory !");

@@ -46,7 +46,7 @@ exports.createResult = async (req, res) => {
             }
           });
           const data =  marksCalculator(req.body);
-          console.log("data from function ",data);
+         
           const candidateEmailContent = {
             body:{
                 greeting : 'Hello !',
@@ -150,7 +150,7 @@ exports.deleteResult = async (req, res) => {
 
 
     exports.getResultByCandidateEmail = async (req, res) => {
-        console.log(req.params);
+       
         try {
             const result = await Result.find({ candidateEmail: req.params.candidateEmail });
             res.status(200).json({
@@ -166,10 +166,10 @@ exports.deleteResult = async (req, res) => {
     }
     
 exports.sendMarksToCandidate = async (req, res) => {
-    console.log(req.params.report_id);
+   
     try {
         const result = await Result.findById(req.params.report_id);
-        console.log(result);
+        
         res.status(200).json({
             status: 'success',
             result,
